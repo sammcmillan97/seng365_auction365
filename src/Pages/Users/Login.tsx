@@ -6,6 +6,6 @@ const Login = () => {
         <div><h1>Login</h1>
             <Link to={"/users/register"}>Register</Link>
         </div>
-    )
+     )
 }
 export default Login;
