@@ -1,5 +1,5 @@
 
-import   React from 'react';
+import React from 'react';
 import './App.css';
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
@@ -7,11 +7,13 @@ import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import Login from "./Pages/Users/Login";
 import NotFound from "./Pages/NotFound";
 import Register from "./Pages/Users/Register";
+import NavBar from "./Components/NavBar/NabBar";
 
 
 function App() {
   return (
       <div className="App">
+          <NavBar/>
         <Router>
           <div>
             <Routes>
