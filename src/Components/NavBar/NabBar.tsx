@@ -1,6 +1,8 @@
 import React, {Component} from "react";
 import {MenuItems} from "./MenuItems";
 import "./NavBar.css";
+import GavelIcon from '@mui/icons-material/Gavel';
+
 
 
 class NavBar extends Component {
@@ -9,7 +11,7 @@ class NavBar extends Component {
         return(
             <nav className="NavbarItems">
                 <div className="menu-icon">
-                    Add Icon
+                    <GavelIcon/>
                 </div>
                 <h1 className="navbar-logo">Auction365</h1>
                 <ul className='nav-menu'>
