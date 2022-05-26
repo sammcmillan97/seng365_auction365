@@ -2,9 +2,10 @@
     background: royalblue;
     height: 80px;
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
     font-size: 1.5rem;
+    padding-left: 20px;
 }
 
 .menu-icon {
@@ -20,7 +21,7 @@
 
 .nav-menu {
     display: grid;
-    grid-template-columns: repeat(3, auto);
+    grid-template-columns: repeat(5, auto);
     grid-gap: 10px;
     list-style: none;
     text-align: center;

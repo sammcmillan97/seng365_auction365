@@ -1,17 +1,27 @@
 export const MenuItems = [
     {
-        title: 'Home',
-        url: '/users/login',
-        cName: 'nav-links'
-    },
-    {
-        title: 'Auctions',
+        title: 'MyListings',
         url: '#',
         cName: 'nav-links'
     },
     {
         title: 'Profile',
         url: '#',
+        cName: 'nav-links'
+    },
+    {
+        title: 'Register',
+        url: '/users/register',
+        cName: 'nav-links'
+    },
+    {
+        title: 'Login',
+        url: '/users/login',
+        cName: 'nav-links'
+    },
+    {
+        title: 'Logout',
+        url: '/users/logout',
         cName: 'nav-links'
     },
 ]
