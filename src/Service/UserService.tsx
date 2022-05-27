@@ -35,6 +35,8 @@ const register = async (firstName: string, lastName: string, email:string, passw
     })
 }
 
+
+
 const checkLoggedIn = (): boolean => {
     const userId = Cookies.get('UserId')
     return !(userId === undefined || userId === null);
