@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie';
+
 export const MenuItems = [
     {
         title: 'MyListings',
@@ -6,7 +8,7 @@ export const MenuItems = [
     },
     {
         title: 'Profile',
-        url: '/users/profile',
+        url: '/users/' + Cookies.get('UserId'),
         cName: 'nav-links'
     },
     {

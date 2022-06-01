@@ -8,21 +8,28 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import {useState} from "react";
-import {register} from "../../Service/UserService";
+import {login, register, uploadUserImage} from "../../Service/UserService";
+import {Avatar} from "@mui/material";
 
 const Register = () => {
 
     const [emailState, setEmailState] = useState( {
-        emailState: false
+        emailState: true
     });
 
     const [passwordState, setPasswordState] = useState({
-        passwordState: false
+        passwordState: true
     })
 
 
-    const [registerErrors, setRegisterErrors] = useState("test");
+    const [registerErrors, setRegisterErrors] = useState("");
+
     const [showPassword, setShowPassword] = useState(false);
+
+    //Photo const
+    const [imageData, setImageData] = useState(null)
+    const [imageURL, setImageURL] = useState("")
+
     const navigate = useNavigate();
 
     const togglePassword = () => {
@@ -30,45 +37,81 @@ const Register = () => {
     };
 
     const registerSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+
         event.preventDefault();
         const registerForm = new FormData(event.currentTarget);
         const email = String(registerForm.get('email'))
         const password = String(registerForm.get('password'))
         const firstName = String(registerForm.get('firstName'))
         const lastName = String(registerForm.get('secondName'))
-        checkParameters(email, password)
-        if (!passwordState && !emailState) {
+
+        if (!checkParameters(email, password)) {
             return
-        } else {
-            const response = await register(firstName, lastName, email, password)
-            if (response !== 201) {
-                setRegisterErrors("Email already in use")
+        }
+
+        const response = await register(firstName, lastName, email, password)
+
+        if (response !== 201) {
+            setRegisterErrors("Email already in use")
+            return
+        }
+
+        if(imageData !== null && imageData !== undefined) {
+            const imageResponse = await uploadUserImage(imageData)
+            if(imageResponse.status !== 201) {
+                setRegisterErrors("Image file failed to upload")
                 return
             }
-            navigate("/users/login")
         }
+        const loginResponse = await login(email, password)
+        if (loginResponse !== 200) {
+            setRegisterErrors("Failed to login")
+            return
+        }
+
+        navigate('/auctions')
     }
 
+    const checkParameters = (email: string, password: string): boolean => {
+        let emailValid = true;
+        let passwordValid = true;
 
-
-    const checkParameters = (email: string, password: string) => {
         if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
-            setEmailState({emailState: true})
-        } else {
+            emailValid = false
             setEmailState({emailState: false})
+        } else {
+            emailValid = true
+            setEmailState({emailState: true})
         }
 
-        if (password.length < 7) {
-            setPasswordState({passwordState: true})
-        } else {
+        if (password.length < 6) {
+            passwordValid = false;
             setPasswordState({passwordState: false})
+        } else {
+            passwordValid = true;
+            setPasswordState({passwordState: true})
         }
+        return (passwordValid && emailValid)
     }
 
 
     const theme = createTheme({
     });
 
+
+    function imageUploadHandler(e: any) {
+        const imageData = e.target.files[0]
+        setImageData(imageData)
+        if(imageData !== undefined && (imageData.type == 'image/png'
+            || imageData.type === 'image/jpg'
+            || imageData.type === 'image/gif'
+            || imageData.type === 'image/jpeg')) {
+            const imageURL = URL.createObjectURL(imageData)
+            setImageURL(imageURL)
+        } else {
+            setImageURL("")
+        }
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -78,20 +121,23 @@ const Register = () => {
                     <Typography component="h1" variant="h5">
                         Register
                     </Typography>
-
                     <Box component="form" onSubmit={async (e: React.FormEvent<HTMLFormElement>) => await registerSubmit(e)} sx={{mt: 1}}>
                         <TextField margin="normal" required fullWidth label="First Name" name="firstName"  id="firstName" autoFocus/>
                         <TextField margin="normal" required fullWidth label="Last Name" name="lastName" id="lastName" autoFocus/>
-                        <TextField className={emailState.emailState ? "error-text": ""} margin="normal" required fullWidth label="Email Address" name="email" id="email"
-                                   helperText={emailState.emailState ? "Must be a valid email address": ""} autoFocus />
+                        <TextField margin="normal" required fullWidth label="Email Address" name="email" id="email"
+                                   helperText={!emailState.emailState ? "Must be a valid email address": ""} autoFocus />
                         <TextField margin="normal" required fullWidth name="password" label="Password" type={!showPassword? "password" :"text"}
-                                   id="password" helperText={passwordState.passwordState ? "Passwords must be at least 6 characters": ""}/>
+                                   id="password" helperText={!passwordState.passwordState ? "Passwords must be at least 6 characters": ""}/>
                         <div>
                             <input id="checkbox" type="checkbox" checked={showPassword} onChange={togglePassword}/>
                         </div>
-
-                        <Button type="submit" fullWidth variant="contained" sx={{mt: 3, mb: 2}}>
-                            Sign In
+                        <Typography component='h3' sx={{marginTop: 2}}>
+                            Upload a profile photo
+                        </Typography>
+                        <Avatar sx={{height: 150, width: 150, marginBottom: 2, marginTop: 2}} alt="Profile Image" src={imageURL} />
+                        <input type="file"  accept=".jpeg,.jpg,.gif,.png" onChange={(e) =>  imageUploadHandler(e)} />
+                        <Button type="submit" fullWidth variant="contained" sx={{marginTop: 2}}>
+                            Register
                         </Button>
                         <div>
                             <Typography sx={{color: 'red'}}> {registerErrors} </Typography>

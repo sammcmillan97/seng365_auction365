@@ -3,6 +3,19 @@ import Cookies from 'js-cookie';
 
 const baseURL = "http://localhost:4941/api/v1/"
 
+const retrieveUser = async (id: string) => {
+
+    const config = getConfig();
+    return await axios.get(baseURL + "users/" + id, config)
+        .then((response) => {
+            return response
+        })
+        .catch((error) => {
+            console.log(error)
+            return error.response.status;
+        })
+}
+
 const login = async (email:string , password: string) => {
 
     return await axios.post( baseURL + "users/login", { password: password, email: email })
@@ -35,6 +48,50 @@ const register = async (firstName: string, lastName: string, email:string, passw
     })
 }
 
+const update = async (id: string, firstName: string, lastName: string, email: string, oldPassword: string, newPassword: string) => {
+
+    const config = getConfig()
+    let body
+
+    if(newPassword === "") {
+        body = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email
+        }
+    } else {
+        body = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            currentPassword: oldPassword,
+            password: newPassword
+        }
+    }
+
+    return await axios.patch(baseURL + "users/" + id, body, config)
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            console.log(error)
+            return error.response;
+        })
+}
+
+const uploadUserImage = async (imageData: any) => {
+    const userId = Cookies.get('UserId')
+    const config = getConfigWithImage(imageData.type)
+
+    return await axios.put(baseURL + "users/image" + userId, imageData, config)
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            console.log(error)
+            return error.response;
+        })
+}
 
 
 const checkLoggedIn = (): boolean => {
@@ -42,5 +99,25 @@ const checkLoggedIn = (): boolean => {
     return !(userId === undefined || userId === null);
 }
 
+const getConfigWithImage = (imageType: String): any => {
+    if (imageType === "image/jpg") {
+        imageType = 'image/jpeg'
+    }
+    return {
+        headers: {
+            "Content-type": imageType,
+            "X-Authorization": Cookies.get("Token") || ""
 
-export{login, register, checkLoggedIn}
+        }
+    }
+}
+
+const getConfig = (): any => {
+    return {
+        headers: {
+            "X-Authorization": Cookies.get("Token") || ""
+        }
+    };
+}
+
+export{login, register, retrieveUser, update, uploadUserImage, checkLoggedIn}
