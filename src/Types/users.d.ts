@@ -1,9 +1,5 @@
 type User = {
     /**
-     * User id as defined by the database
-     */
-    id: number,
-    /**
      * Users email
      */
     email: string

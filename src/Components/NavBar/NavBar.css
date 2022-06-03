@@ -1,5 +1,5 @@
 .NavbarItems {
-    background: royalblue;
+    background: dimgrey;
     height: 80px;
     display: flex;
     justify-content: left;
@@ -27,6 +27,11 @@
     text-align: center;
     width: 80vw;
     justify-content: start;
+    margin-right: 2rem;
+}
+
+.logout_button {
+    padding: 0.5rem 1rem;
     margin-right: 2rem;
 }
 

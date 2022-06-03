@@ -1,32 +1,23 @@
-import {MenuItems} from "./MenuItems";
+
 import "./NavBar.css";
 import GavelIcon from '@mui/icons-material/Gavel';
-import {checkLoggedIn} from "../../Service/UserService";
 import * as React from 'react';
-import {useEffect} from "react";
+import Button from '@mui/material/Button';
+import {MenuItems} from "./MenuItems"
 
 
 
 
 const NavBar = () => {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const [isLogged, setLogged] = React.useState(false)
 
-    useEffect(() => {
-        const refresh = () => {
-            setLogged(checkLoggedIn)
-        }
-
-        refresh()
-    }, [])
-
-
-        return(
+    return(
             <nav className="NavbarItems">
                 <div className="menu-icon">
                     <GavelIcon/>
                 </div>
+                <a href={"/auctions"}>
                 <h1 className="navbar-logo">Auction365</h1>
+                </a>
                 <ul className='nav-menu'>
                     {MenuItems.map((item, index) => {
                         return (

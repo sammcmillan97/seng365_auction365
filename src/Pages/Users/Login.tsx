@@ -25,7 +25,8 @@ const Login = () => {
         const response = await login(email, password);
 
         if (response === 200) {
-            navigate('/register')
+            navigate('/auctions')
+            window.location.reload()
         }
         setLoginErrors("Incorrect password or email")
     }

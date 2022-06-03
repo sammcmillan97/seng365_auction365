@@ -56,17 +56,18 @@ const Register = () => {
             return
         }
 
-        if(imageData !== null && imageData !== undefined) {
-            const imageResponse = await uploadUserImage(imageData)
-            if(imageResponse.status !== 201) {
-                setRegisterErrors("Image file failed to upload")
-                return
-            }
-        }
         const loginResponse = await login(email, password)
         if (loginResponse !== 200) {
             setRegisterErrors("Failed to login")
             return
+        }
+
+        if(imageData !== null && imageData !== undefined) {
+            const imageResponse = await uploadUserImage(imageData)
+            if(imageResponse.status !== 201) {
+                setRegisterErrors(imageResponse.status)
+                return
+            }
         }
 
         navigate('/auctions')

@@ -30,6 +30,22 @@ const login = async (email:string , password: string) => {
         })
 }
 
+const logout = async () => {
+
+    const config = getConfig()
+
+    return await axios.post(baseURL + 'users/logout', config)
+        .then((response) => {
+            Cookies.remove('UserId')
+            Cookies.remove('Token')
+            return response.status;
+        })
+        .catch((error) => {
+            console.log(error)
+            return error.response.status;
+        })
+}
+
 const register = async (firstName: string, lastName: string, email:string, password: string) => {
 
     return await axios.post(baseURL + "users/register", {
@@ -80,10 +96,10 @@ const update = async (id: string, firstName: string, lastName: string, email: st
 }
 
 const uploadUserImage = async (imageData: any) => {
-    const userId = Cookies.get('UserId')
+    const id = Cookies.get('UserId')
     const config = getConfigWithImage(imageData.type)
 
-    return await axios.put(baseURL + "users/image" + userId, imageData, config)
+    return await axios.put(baseURL + "users/" + id + "/image", imageData, config)
         .then((response) => {
             return response;
         })
@@ -92,6 +108,25 @@ const uploadUserImage = async (imageData: any) => {
             return error.response;
         })
 }
+
+const deleteUserImage = async () => {
+    const id = Cookies.get('UserId')
+    const config = getConfig()
+
+    return await axios.delete(baseURL + "users/" + id + "/image", config)
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            console.log(error)
+            return error.response;
+        })
+}
+
+const retrieveUserImage = (id: string) => {
+    return baseURL + "users/" + id + "/image"
+}
+
 
 
 const checkLoggedIn = (): boolean => {
@@ -120,4 +155,4 @@ const getConfig = (): any => {
     };
 }
 
-export{login, register, retrieveUser, update, uploadUserImage, checkLoggedIn}
+export{login, register, retrieveUser, update, uploadUserImage, retrieveUserImage, deleteUserImage, checkLoggedIn, logout }
