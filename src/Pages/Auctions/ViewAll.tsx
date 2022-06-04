@@ -22,21 +22,27 @@ const ViewAll = () => {
 
 
     const [auctions, setAuctions] = React.useState<Array<Auction>>([])
-    const [search, setSearch] = React.useState("")
+    const [searchQuery, setSearch] = React.useState("")
 
     React.useEffect(() => {
         getAuctions()
     }, [])
 
     const getAuctions = async () => {
-        const response = await getAllAuctions()
+        const auctionParams = {
+            q: searchQuery
+        }
+
+        const response = await getAllAuctions(auctionParams)
         setAuctions(response.data.auctions)
     }
 
     const theme = createTheme();
 
-    function viewAuction(auctionId: number) {
-        return undefined;
+
+    function handleSearch(value: string) {
+        setSearch(value)
+        getAuctions()
     }
 
     return (
@@ -49,9 +55,7 @@ const ViewAll = () => {
                             Auctions
                         </Typography>
                         <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
-                            <TextField id="standard-basic" label="Search" variant="standard" onChange={(e) => {
-                                setSearch(e.target.value); } } />
-                            <Button variant="outlined">Secondary action</Button>
+                            <TextField id="standard-basic" label="Search" variant="standard" onChange={(e) => {handleSearch(e.target.value); } } />
                         </Stack>
                     </Container>
                 </Box>
@@ -100,7 +104,7 @@ const ViewAll = () => {
             </main>
 
             <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
-                <Typography variant="h6" align="center" gutterBottom>
+                <Typography variant="h5" align="center" gutterBottom>
                     Auction365
                 </Typography>
             </Box>

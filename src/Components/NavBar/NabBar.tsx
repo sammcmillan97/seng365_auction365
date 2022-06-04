@@ -2,7 +2,6 @@
 import "./NavBar.css";
 import GavelIcon from '@mui/icons-material/Gavel';
 import * as React from 'react';
-import Button from '@mui/material/Button';
 import {MenuItems} from "./MenuItems"
 
 

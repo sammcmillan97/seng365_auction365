@@ -134,6 +134,10 @@ const checkLoggedIn = (): boolean => {
     return !(userId === undefined || userId === null);
 }
 
+const getUser = (): number => {
+    return parseInt(Cookies.get('UserId') as string);
+}
+
 const getConfigWithImage = (imageType: String): any => {
     if (imageType === "image/jpg") {
         imageType = 'image/jpeg'
@@ -155,4 +159,4 @@ const getConfig = (): any => {
     };
 }
 
-export{login, register, retrieveUser, update, uploadUserImage, retrieveUserImage, deleteUserImage, checkLoggedIn, logout }
+export{login, register, retrieveUser, update, uploadUserImage, retrieveUserImage, deleteUserImage, checkLoggedIn, logout, getUser}

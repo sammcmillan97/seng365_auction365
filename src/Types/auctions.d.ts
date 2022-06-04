@@ -28,7 +28,7 @@ type Auction = {
      */
     reserve: number
     /**
-     * Number of bids
+     * Number of bids.d.ts
      */
     numBids: number
     /**

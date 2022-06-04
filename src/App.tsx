@@ -1,9 +1,8 @@
 
-import React, {useState} from 'react';
+import React from 'react';
 import './App.css';
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import Cookies from "js-cookie";
 
 import Login from "./Pages/Users/Login";
 import Register from "./Pages/Users/Register";
@@ -12,6 +11,9 @@ import ViewAll from "./Pages/Auctions/ViewAll";
 import NavBar from "./Components/NavBar/NabBar";
 import EditUser from  "./Pages/Users/EditUser";
 import EditUserImage from "./Pages/Users/EditUserImage";
+import ViewAuction from "./Pages/Auctions/viewAuction";
+import MyAuctions from "./Pages/Auctions/MyAuctions";
+import CreateAuction from "./Pages/Auctions/CreateAuction";
 
 
 function App() {
@@ -23,6 +25,9 @@ function App() {
         <Router>
           <div>
             <Routes>
+                <Route path="/auctions/create" element={<CreateAuction/>}/>
+                <Route path="/auctions/myauctions" element={<MyAuctions/>}/>
+                <Route path="/auctions/:id" element={<ViewAuction/>}/>
                 <Route path="/auctions" element={<ViewAll/>}/>
                 <Route path="/users/login" element={<Login/>}/>
                 <Route path="/users/register" element={<Register/>}/>

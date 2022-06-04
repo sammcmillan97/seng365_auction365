@@ -2,8 +2,8 @@ import Cookies from 'js-cookie';
 
 export const MenuItems = [
     {
-        title: 'MyListings',
-        url: '#',
+        title: 'Manage',
+        url: '/auctions/myauctions',
         cName: 'nav-links'
     },
     {
