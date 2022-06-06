@@ -1,13 +1,22 @@
 import {SyntheticEvent, useState} from "react";
 import * as React from "react";
-import {useParams} from "react-router-dom";
-import {getAllAuctions, getIndividualAuction, getAllBids} from "../../Service/AuctionService";
+import {useNavigate, useParams} from "react-router-dom";
+import {getAllAuctions, getIndividualAuction, getAllBids, deleteAuction, placeBid} from "../../Service/AuctionService";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import {Avatar, TextField} from "@mui/material";
+import {
+    autocompleteClasses,
+    Avatar,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    TextField
+} from "@mui/material";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
@@ -23,16 +32,23 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import {getUser} from "../../Service/UserService";
+import Button from "@mui/material/Button";
+import {debug} from "util";
 
 
 const ViewAuction = () => {
 
     const {id} = useParams();
-    const [selectedAuction, setSelectedAuction] = React.useState<AuctionIndividual>({auctionId: 0, title: "", category: 0, sellerId: 0, sellerFirstName: "",
+    const [selectedAuction, setSelectedAuction] = React.useState<AuctionIndividual>({auctionId: 0, title: "", categoryId: 0, sellerId: 0, sellerFirstName: "",
                                                                             sellerLastName: "", reserve: 0, numBids: 0, highestBid: 0, endDate: "", description: ""})
-
+    const navigate = useNavigate();
     const [relatedAuctions, setRelatedAuctions] = React.useState<Array<Auction>>([])
     const [bids, setBids] = React.useState<Array<Bid>>([])
+    const [currentUser, setCurrentUser] = React.useState(0)
+    const [deleteOpen, setDeleteOpen] = React.useState(false);
+    const [deleteErrors, setDeleteErrors] = React.useState("")
+    const [bidErrors, setBidErrors] = React.useState("")
 
     React.useEffect(() => {
     const load = async () => {
@@ -51,7 +67,6 @@ const ViewAuction = () => {
         const auctionParams = {
             categoryIds: [auctionResponse.data.categoryId],
         }
-
         const auctionsResponseOne = await getAllAuctions(auctionParams)
         const similarCategory = (auctionsResponseOne.data.auctions.filter((relatedAuctions: Auction) => (
             relatedAuctions.auctionId !== auctionResponse.data.auctionId)))
@@ -63,12 +78,76 @@ const ViewAuction = () => {
         const similarSeller = (auctionsResponseTwo.data.auctions.filter((relatedAuctions: Auction) => (
             relatedAuctions.auctionId !==  auctionResponse.data.auctionId)))
 
-        setRelatedAuctions(similarCategory.concat(similarSeller))
+        const relatedAuctionsList: React.SetStateAction<Auction[]> = []
+        similarSeller.forEach((auction: Auction) => {
+            if(!similarCategory.includes(auction)) {
+                relatedAuctionsList.push(auction)
+            }
+        });
+
+        setRelatedAuctions(relatedAuctionsList)
+        const userId = getUser()
+        setCurrentUser(userId)
+
     }
+
+    const handleDeleteOpen = () => {
+        setDeleteOpen(true);
+    }
+
+    const deleteCancelClose = async () => {
+
+        const deleteResponse = await deleteAuction(selectedAuction.auctionId)
+        if (deleteResponse.status === 200) {
+            setDeleteOpen(false);
+            navigate("/auctions/myauctions")
+        } else {
+            setDeleteErrors("Something went wrong")
+        }
+
+    };
+
+    const deleteConfirmClose = () => {
+        setDeleteOpen(false);
+    };
 
 
 
     const theme = createTheme();
+
+    function handleEdit() {
+        navigate("/auctions/edit/" + selectedAuction.auctionId)
+    }
+
+    const bidSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const bidForm = new FormData(event.currentTarget);
+        const bidAmount = parseInt(String(bidForm.get('bidAmount')))
+        if(currentUser === selectedAuction.sellerId) {
+            setBidErrors("You can't place a bid on your own auction")
+            return
+        }
+        if(isNaN(bidAmount)) {
+            setBidErrors("Please enter your bid")
+        }
+        if(bidAmount === 0) {
+            setBidErrors("Bid must be greater then zero")
+            return
+        }
+        if(bidAmount < selectedAuction.highestBid) {
+            setBidErrors("Bid must be higher then current highest bid")
+            return
+        }
+        setBidErrors("")
+        const bidResponse = await placeBid(selectedAuction.auctionId, bidAmount)
+        if (bidResponse.status !== 201) {
+            setBidErrors(bidResponse.statusText)
+            return
+        }
+        setDeleteOpen(false);
+        window.location.reload()
+    }
+
 
     return (
         <ThemeProvider theme={theme}>
@@ -76,8 +155,43 @@ const ViewAuction = () => {
             <main>
                 <Box sx={{bgcolor: 'background.paper', pt: 8, pb: 6}}>
                     <Container maxWidth="sm">
-
                         <Card sx={{height: '100%'}}>
+                            {currentUser === selectedAuction.sellerId && selectedAuction.numBids !== 0 ?
+                            <Typography>
+                                A bid has been made! You may longer edit/delete this auction.
+                            </Typography> : ""}
+                            {currentUser === selectedAuction.sellerId && selectedAuction.numBids === 0 ?
+                            <Stack direction="row" spacing={2} justifyContent="left" >
+                                <Button variant="outlined" onClick={handleEdit}>Edit</Button>
+                                <Button variant="outlined" onClick={handleDeleteOpen}>
+                                    Delete Auction
+                                </Button>
+                                <div>
+                                    <Dialog
+                                        open={deleteOpen}
+                                        aria-labelledby="alert-dialog-title"
+                                        aria-describedby="alert-dialog-description"
+                                    >
+                                        <DialogTitle id="alert-dialog-title">
+                                            {"Delete Auction"}
+                                        </DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText id="alert-dialog-description">
+                                                Are you sure ? Deleting this auction will permanently remove it!
+                                            </DialogContentText>
+                                            <DialogContentText>
+                                                {deleteErrors}
+                                            </DialogContentText>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={deleteConfirmClose}>Cancel</Button>
+                                            <Button onClick={deleteCancelClose} autoFocus>
+                                                Delete
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
+                                </div>
+                            </Stack> : "" }
                             <Typography component="h1" variant="h2" align="center" color="text.primary" gutterBottom sx={{pt: 3}}>
                                 {selectedAuction.title}
                             </Typography>
@@ -97,6 +211,9 @@ const ViewAuction = () => {
                                 </Typography>
                             </Stack>
                             <Typography sx={{ pt: 2, pl: 3}} >
+                                Ends: {selectedAuction.endDate.substring(0,10)} {selectedAuction.endDate.substring(12,19)}
+                            </Typography>
+                            <Typography sx={{ pt: 2, pl: 3}} >
                                 {selectedAuction.description}
                             </Typography>
                             <Typography sx={{ pt: 2, pl: 3}} >
@@ -106,9 +223,31 @@ const ViewAuction = () => {
                             Number Of Bids: {selectedAuction.numBids}
                             </Typography>
                             <Typography sx={{pl: 3, pb:3}} >
-                                Current Bid: ${selectedAuction.highestBid}
+                                Current Bid: {selectedAuction.highestBid === null ? "$0" : "$" + selectedAuction.highestBid}
                             </Typography>
+
                         </Card>
+                        <Box sx={{pt:4, pb:4}}>
+
+                        </Box>
+                            <Container maxWidth="xs">
+                                <Card sx={{height: '100%'}}>
+                                    <Typography variant='h5' sx={{ml: 15}}> Place Bid</Typography>
+                                    {!isNaN(currentUser) ?
+                                    <Box component="form" onSubmit={async (e: React.FormEvent<HTMLFormElement>) => await bidSubmit(e)} sx={{mt: 1}}>
+                                        <TextField sx={{ml: 3}} margin="normal" required type="number" label="Amount" name="bidAmount" id="bidAmount" autoFocus/>
+                                        <Button type="submit"  variant="contained" sx={{marginTop: 3, ml: 3}}>
+                                            Submit
+                                        </Button>
+                                        <div>
+                                            <Typography sx={{color: 'red', pl:3, pb:3}}> {bidErrors} </Typography>
+                                        </div>
+                                    </Box>
+                                        :  <Typography sx={{ pl:6, pb:3}}>
+                                            Login or Register to make a bid!
+                                        </Typography>}
+                                </Card>
+                            </Container>
                         <Box sx={{pt:4, pb:4}}>
 
                         </Box>

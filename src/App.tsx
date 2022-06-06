@@ -14,10 +14,11 @@ import EditUserImage from "./Pages/Users/EditUserImage";
 import ViewAuction from "./Pages/Auctions/viewAuction";
 import MyAuctions from "./Pages/Auctions/MyAuctions";
 import CreateAuction from "./Pages/Auctions/CreateAuction";
+import UserLogout from "./Pages/Users/UserLogout";
+import EditAuction from "./Pages/Auctions/EditAuction";
 
 
 function App() {
-
 
   return (
       <div className="App">
@@ -25,6 +26,8 @@ function App() {
         <Router>
           <div>
             <Routes>
+                <Route path="/auctions/edit/:id" element={<EditAuction/>}/>
+                <Route path="/users/logout" element={<UserLogout/>}/>
                 <Route path="/auctions/create" element={<CreateAuction/>}/>
                 <Route path="/auctions/myauctions" element={<MyAuctions/>}/>
                 <Route path="/auctions/:id" element={<ViewAuction/>}/>

@@ -1,16 +1,6 @@
 import Cookies from 'js-cookie';
 
-export const MenuItems = [
-    {
-        title: 'Manage',
-        url: '/auctions/myauctions',
-        cName: 'nav-links'
-    },
-    {
-        title: 'Profile',
-        url: '/users/' + Cookies.get('UserId'),
-        cName: 'nav-links'
-    },
+export const LoggedOutMenuItems = [
     {
         title: 'Register',
         url: '/users/register',
@@ -19,6 +9,19 @@ export const MenuItems = [
     {
         title: 'Login',
         url: '/users/login',
+        cName: 'nav-links'
+    },
+]
+
+export const LoggedInMenuItems = [
+    {
+        title: 'Manage',
+        url: '/auctions/myauctions',
+        cName: 'nav-links'
+    },
+    {
+        title: 'Profile',
+        url: '/users/' + Cookies.get('UserId'),
         cName: 'nav-links'
     },
     {

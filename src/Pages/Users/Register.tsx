@@ -7,11 +7,20 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import {useState} from "react";
-import {login, register, uploadUserImage} from "../../Service/UserService";
+import {useEffect, useState} from "react";
+import {checkLoggedIn, login, register, uploadUserImage} from "../../Service/UserService";
 import {Avatar} from "@mui/material";
 
 const Register = () => {
+
+    React.useEffect(() => {
+        const load = async () => {
+            if (!checkLoggedIn()) {
+                navigate("/auctions")
+            }
+        }
+        load()
+    }, [])
 
     const [emailState, setEmailState] = useState( {
         emailState: true

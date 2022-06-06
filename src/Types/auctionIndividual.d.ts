@@ -1,7 +1,7 @@
 type AuctionIndividual = {
     auctionId: number,
     title: string,
-    category: number,
+    categoryId: number,
     sellerId: number,
     sellerFirstName: string,
     sellerLastName: string,

@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import {retrieveUser, retrieveUserImage, update} from "../../Service/UserService";
+import {checkCorrectUser, checkLoggedIn, retrieveUser, retrieveUserImage, update} from "../../Service/UserService";
 import {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 
@@ -37,6 +37,12 @@ const EditUser = () => {
     React.useEffect(() => {
         const getUser = async () => {
             const userId = id || "";
+            if (!checkLoggedIn()) {
+                navigate("/auctions")
+            }
+            if (!checkCorrectUser(userId)) {
+                navigate("/auctions")
+            }
             const response = await retrieveUser(userId)
             setUser(response.data)
         }

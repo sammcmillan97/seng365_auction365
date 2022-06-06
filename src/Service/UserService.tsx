@@ -11,7 +11,6 @@ const retrieveUser = async (id: string) => {
             return response
         })
         .catch((error) => {
-            console.log(error)
             return error.response.status;
         })
 }
@@ -25,7 +24,6 @@ const login = async (email:string , password: string) => {
             return response.status;
         })
         .catch((error) => {
-            console.log(error)
             return error.response.status;
         })
 }
@@ -34,14 +32,13 @@ const logout = async () => {
 
     const config = getConfig()
 
-    return await axios.post(baseURL + 'users/logout', config)
+    return await axios.post(baseURL + 'users/logout', {}, config)
         .then((response) => {
             Cookies.remove('UserId')
             Cookies.remove('Token')
             return response.status;
         })
         .catch((error) => {
-            console.log(error)
             return error.response.status;
         })
 }
@@ -59,7 +56,6 @@ const register = async (firstName: string, lastName: string, email:string, passw
         return response.status;
     })
     .catch((error) => {
-        console.log(error)
         return error.response.status;
     })
 }
@@ -90,7 +86,6 @@ const update = async (id: string, firstName: string, lastName: string, email: st
             return response;
         })
         .catch((error) => {
-            console.log(error)
             return error.response;
         })
 }
@@ -104,7 +99,6 @@ const uploadUserImage = async (imageData: any) => {
             return response;
         })
         .catch((error) => {
-            console.log(error)
             return error.response;
         })
 }
@@ -118,7 +112,6 @@ const deleteUserImage = async () => {
             return response;
         })
         .catch((error) => {
-            console.log(error)
             return error.response;
         })
 }
@@ -132,6 +125,11 @@ const retrieveUserImage = (id: string) => {
 const checkLoggedIn = (): boolean => {
     const userId = Cookies.get('UserId')
     return !(userId === undefined || userId === null);
+}
+
+const checkCorrectUser = (userId: string): boolean => {
+    const cookieId = Cookies.get('UserId') as string
+    return (userId === cookieId)
 }
 
 const getUser = (): number => {
@@ -159,4 +157,4 @@ const getConfig = (): any => {
     };
 }
 
-export{login, register, retrieveUser, update, uploadUserImage, retrieveUserImage, deleteUserImage, checkLoggedIn, logout, getUser}
+export{login, register, retrieveUser, update, uploadUserImage, retrieveUserImage, deleteUserImage, checkLoggedIn, logout, getUser, checkCorrectUser}

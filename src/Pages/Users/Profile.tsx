@@ -7,7 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import {Link, useNavigate, useParams} from "react-router-dom";
-import {retrieveUser, retrieveUserImage, update} from "../../Service/UserService";
+import {checkCorrectUser, checkLoggedIn, retrieveUser, retrieveUserImage, update} from "../../Service/UserService";
 import {useState} from "react";
 import {Avatar} from "@mui/material";
 import defaultImage from "../../Resources/Images/default image.png";
@@ -23,6 +23,12 @@ const Profile = () => {
 
         const getUser = async () => {
             const userId = id || "";
+            if (!checkLoggedIn()) {
+                navigate("/auctions")
+            }
+            if (!checkCorrectUser(userId)) {
+                navigate("/auctions")
+            }
             const response = await retrieveUser(userId)
             setUser(response.data)
         }

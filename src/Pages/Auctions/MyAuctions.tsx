@@ -16,7 +16,7 @@ import Link from "@mui/material/Link";
 import * as React from "react";
 import Button from "@mui/material/Button";
 import {getAllAuctions} from "../../Service/AuctionService";
-import {getUser} from "../../Service/UserService";
+import {checkLoggedIn, getUser} from "../../Service/UserService";
 import {useNavigate} from "react-router-dom";
 
 const MyAuctions = () => {
@@ -32,6 +32,9 @@ const MyAuctions = () => {
     }, [])
 
     const getDetails = async () => {
+        if (!checkLoggedIn()) {
+            navigate("/auctions")
+        }
         const userId = getUser();
         const auctionParamsSelling = {
             sellerId: userId
@@ -116,31 +119,7 @@ const MyAuctions = () => {
 
                                         </CardContent>
                                         <CardActions>
-                                            <Link href={"/auctions/" + auction.auctionId} underline="none"> View </Link>
-                                            <Link href={"/auctions/edit/" + auction.auctionId} underline="none" > Edit</Link>
-                                            <Button onClick={handleClickOpen}>Delete</Button>
-                                            <Dialog
-                                                open={open}
-                                                onClose={handleClose}
-                                                aria-labelledby="alert-dialog-title"
-                                                aria-describedby="alert-dialog-description"
-                                            >
-                                                <DialogTitle id="alert-dialog-title">
-                                                {"Use Google's location service?"}
-                                            </DialogTitle>
-                                                <DialogContent>
-                                                    <DialogContentText id="alert-dialog-description">
-                                                        Let Google help apps determine location. This means sending anonymous
-                                                        location data to Google, even when no apps are running.
-                                                    </DialogContentText>
-                                                </DialogContent>
-                                                <DialogActions>
-                                                    <Button onClick={handleClose}>Cancel</Button>
-                                                    <Button onClick={(e) =>  deleteAuction(e)} autoFocus>
-                                                        Delete
-                                                    </Button>
-                                                </DialogActions>
-                                            </Dialog>
+                                            <Link href={"/auctions/" + auction.auctionId} underline="none"> View/Edit/Delete </Link>
                                         </CardActions>
                                     </Card>
                                 </Grid>

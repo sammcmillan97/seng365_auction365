@@ -6,7 +6,13 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 import {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {retrieveUser, retrieveUserImage, uploadUserImage, deleteUserImage} from "../../Service/UserService";
+import {
+    retrieveUser,
+    retrieveUserImage,
+    uploadUserImage,
+    deleteUserImage,
+    checkLoggedIn, checkCorrectUser
+} from "../../Service/UserService";
 import {Avatar} from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
@@ -25,6 +31,12 @@ const EditUserImage = () => {
 
         const getImage = async () => {
             const userId = id || "";
+            if (!checkLoggedIn()) {
+                navigate("/auctions")
+            }
+            if (!checkCorrectUser(userId)) {
+                navigate("/auctions")
+            }
             const response = retrieveUserImage(userId)
             setImageURL(response)
         }

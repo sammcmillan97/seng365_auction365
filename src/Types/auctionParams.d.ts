@@ -3,4 +3,5 @@ export interface AuctionParams {
     categoryIds?: number[];
     sellerId?: number
     bidderId?: number
+    sortBy?: string
 }
